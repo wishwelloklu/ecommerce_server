@@ -5,17 +5,24 @@ const bodyParser = require("body-parser");
 const { default: mongoose } = require("mongoose");
 require("dotenv/config");
 
-var app = express();
+//envs
+const env = process.env;
+const hostname = env.HOSTNAME;
+const port = env.PORT;
+const connectionString = env.MOGODB_CONNECTION_STRING;
+const api = env.API_PREFIX;
+
+const app = express();
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 app.use(cors());
 app.options("*", cors());
 
+const authRouter = require("./routes/auth");
+
+app.use(`${api}/`, authRouter);
+
 //Start server
-const env = process.env;
-const hostname = env.HOSTNAME;
-const port = env.PORT;
-const connectionString = env.MOGODB_CONNECTION_STRING;
 
 try {
   mongoose.connect(connectionString).then(() => {
